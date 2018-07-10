@@ -13,14 +13,18 @@ train_size = 0.6
 validation_size = 0.2
 random_seed = 7
 num_rounds = 20000
-early_stopping_rounds = 50
+num_rows = None
+num_rows = 1000
+early_stopping_rounds = 100
 
-common_param = {'eta': 0.05, 'silent': 1, 'tree_method': 'gpu_hist', 'subsample': 0.9,
+common_param = {'eta': 0.05, 'silent': 1, 'tree_method': 'hist', 'subsample': 0.9,
                 'colsample_bytree': 0.7}
 optimizer_param = [
     {'name': 'Baseline', 'optimizer': 'default_optimizer'},
     {'name': 'Momentum', 'optimizer': 'momentum_optimizer', 'momentum': 0.3},
     {'name': 'Nesterov', 'optimizer': 'nesterov_optimizer', 'momentum': 0.3},
+    {'name': 'AddSign', 'optimizer': 'add_sign_optimizer'},
+    {'name': 'PowerSign', 'optimizer': 'power_sign_optimizer'},
 ]
 
 
@@ -101,9 +105,8 @@ class Experiment:
         plt.savefig('figures/' + snake_name + '_zoomed.png', bbox_inches='tight')
 
 
-num_rows = 500000
 experiments = [
-    Experiment("Synthetic regression", "reg:linear", "rmse", data_loader.get_synthetic_regression),
+    Experiment("Synthetic classification", "binary:logistic", "error", data_loader.get_synthetic_classification),
     Experiment("Cover type", "multi:softmax", "merror", data_loader.get_cover_type),
     Experiment("YearPredictMSD", "reg:linear", "rmse", data_loader.get_year),
     Experiment("Higgs", "binary:logistic", "error", data_loader.get_higgs),
@@ -111,7 +114,6 @@ experiments = [
     Experiment("Airline", "binary:logistic", "error", data_loader.get_airline),
 ]
 
-matplotlib.use('pgf')
 matplotlib.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
